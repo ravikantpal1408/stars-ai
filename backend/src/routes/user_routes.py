@@ -1,6 +1,6 @@
 import fastapi
 
-from controller.users_controller import router as users_router
+from backend.src.controller.users_controller import router as users_router
 
 router = fastapi.APIRouter()
 

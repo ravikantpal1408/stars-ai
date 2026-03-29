@@ -1,63 +1,73 @@
 import logging
 import pathlib
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
-import decouple
-import pydantic
-
+# Dynamically find the root directory where your .env lives
 ROOT_DIR: pathlib.Path = pathlib.Path(__file__).parent.parent.parent.parent.parent.resolve()
 
+class BackendBaseSettings(BaseSettings):
+    # This replaces all 'decouple' logic. 
+    # It reads your .env file and maps keys to these variables.
+    model_config = SettingsConfigDict(
+        env_file=f"{ROOT_DIR}/.env",
+        case_sensitive=True,
+        extra="ignore" 
+    )
 
-class BackendBaseSettings(pydantic.BaseSettings):
-    TITLE: str = "DAPSQL FARN-Stack Template Application"
+    # General Settings
+    TITLE: str = "STARS AI Backend"
     VERSION: str = "0.1.0"
     TIMEZONE: str = "UTC"
     DESCRIPTION: str | None = None
     DEBUG: bool = False
 
-    SERVER_HOST: str = decouple.config("BACKEND_SERVER_HOST", cast=str)  # type: ignore
-    SERVER_PORT: int = decouple.config("BACKEND_SERVER_PORT", cast=int)  # type: ignore
-    SERVER_WORKERS: int = decouple.config("BACKEND_SERVER_WORKERS", cast=int)  # type: ignore
+    # Server Settings (Automatically looks for these keys in .env)
+    SERVER_HOST: str = Field(alias="BACKEND_SERVER_HOST", default="127.0.0.1")
+    SERVER_PORT: int = Field(alias="BACKEND_SERVER_PORT", default=8000)
+    SERVER_WORKERS: int = Field(alias="BACKEND_SERVER_WORKERS", default=1)
+    
     API_PREFIX: str = "/api"
     DOCS_URL: str = "/docs"
     OPENAPI_URL: str = "/openapi.json"
     REDOC_URL: str = "/redoc"
     OPENAPI_PREFIX: str = ""
 
-    DB_POSTGRES_HOST: str = decouple.config("POSTGRES_HOST", cast=str)  # type: ignore
-    DB_MAX_POOL_CON: int = decouple.config("DB_MAX_POOL_CON", cast=int)  # type: ignore
-    DB_POSTGRES_NAME: str = decouple.config("POSTGRES_DB", cast=str)  # type: ignore
-    DB_POSTGRES_PASSWORD: str = decouple.config("POSTGRES_PASSWORD", cast=str)  # type: ignore
-    DB_POOL_SIZE: int = decouple.config("DB_POOL_SIZE", cast=int)  # type: ignore
-    DB_POOL_OVERFLOW: int = decouple.config("DB_POOL_OVERFLOW", cast=int)  # type: ignore
-    DB_POSTGRES_PORT: int = decouple.config("POSTGRES_PORT", cast=int)  # type: ignore
-    DB_POSTGRES_SCHEMA: str = decouple.config("POSTGRES_SCHEMA", cast=str)  # type: ignore
-    DB_TIMEOUT: int = decouple.config("DB_TIMEOUT", cast=int)  # type: ignore
-    DB_POSTGRES_USERNAME: str = decouple.config("POSTGRES_USERNAME", cast=str)  # type: ignore
+    # Database Settings (Aliases match your .env keys)
+    # DB_POSTGRES_HOST: str = Field(alias="POSTGRES_HOST")
+    # DB_MAX_POOL_CON: int = Field(alias="DB_MAX_POOL_CON", default=20)
+    # DB_POSTGRES_NAME: str = Field(alias="POSTGRES_DB")
+    # DB_POSTGRES_PASSWORD: str = Field(alias="POSTGRES_PASSWORD")
+    # DB_POOL_SIZE: int = Field(alias="DB_POOL_SIZE", default=5)
+    # DB_POOL_OVERFLOW: int = Field(alias="DB_POOL_OVERFLOW", default=10)
+    # DB_POSTGRES_PORT: int = Field(alias="POSTGRES_PORT", default=5432)
+    # DB_POSTGRES_SCHEMA: str = Field(alias="POSTGRES_SCHEMA", default="public")
+    # DB_TIMEOUT: int = Field(alias="DB_TIMEOUT", default=30)
+    # DB_POSTGRES_USERNAME: str = Field(alias="POSTGRES_USERNAME")
 
-    IS_DB_ECHO_LOG: bool = decouple.config("IS_DB_ECHO_LOG", cast=bool)  # type: ignore
-    IS_DB_FORCE_ROLLBACK: bool = decouple.config("IS_DB_FORCE_ROLLBACK", cast=bool)  # type: ignore
-    IS_DB_EXPIRE_ON_COMMIT: bool = decouple.config("IS_DB_EXPIRE_ON_COMMIT", cast=bool)  # type: ignore
+    # IS_DB_ECHO_LOG: bool = Field(alias="IS_DB_ECHO_LOG", default=False)
+    # IS_DB_FORCE_ROLLBACK: bool = Field(alias="IS_DB_FORCE_ROLLBACK", default=False)
+    # IS_DB_EXPIRE_ON_COMMIT: bool = Field(alias="IS_DB_EXPIRE_ON_COMMIT", default=True)
 
-    API_TOKEN: str = decouple.config("API_TOKEN", cast=str)  # type: ignore
-    AUTH_TOKEN: str = decouple.config("AUTH_TOKEN", cast=str)  # type: ignore
-    JWT_TOKEN_PREFIX: str = decouple.config("JWT_TOKEN_PREFIX", cast=str)  # type: ignore
-    JWT_SECRET_KEY: str = decouple.config("JWT_SECRET_KEY", cast=str)  # type: ignore
-    JWT_SUBJECT: str = decouple.config("JWT_SUBJECT", cast=str)  # type: ignore
-    JWT_MIN: int = decouple.config("JWT_MIN", cast=int)  # type: ignore
-    JWT_HOUR: int = decouple.config("JWT_HOUR", cast=int)  # type: ignore
-    JWT_DAY: int = decouple.config("JWT_DAY", cast=int)  # type: ignore
-    JWT_ACCESS_TOKEN_EXPIRATION_TIME: int = JWT_MIN * JWT_HOUR * JWT_DAY
+    # Auth & Security
+    # API_TOKEN: str = Field(alias="API_TOKEN")
+    # AUTH_TOKEN: str = Field(alias="AUTH_TOKEN")
+    # JWT_TOKEN_PREFIX: str = Field(alias="JWT_TOKEN_PREFIX", default="Token")
+    # JWT_SECRET_KEY: str = Field(alias="JWT_SECRET_KEY")
+    # JWT_SUBJECT: str = Field(alias="JWT_SUBJECT", default="access")
+    # JWT_MIN: int = Field(alias="JWT_MIN", default=60)
+    # JWT_HOUR: int = Field(alias="JWT_HOUR", default=24)
+    # JWT_DAY: int = Field(alias="JWT_DAY", default=7)
+    
+    @property
+    def JWT_ACCESS_TOKEN_EXPIRATION_TIME(self) -> int:
+        return self.JWT_MIN * self.JWT_HOUR * self.JWT_DAY
 
-    IS_ALLOWED_CREDENTIALS: bool = decouple.config("IS_ALLOWED_CREDENTIALS", cast=bool)  # type: ignore
+    IS_ALLOWED_CREDENTIALS: bool = Field(alias="IS_ALLOWED_CREDENTIALS", default=True)
     ALLOWED_ORIGINS: list[str] = [
-        "http://localhost:3000",  # React default port
-        "http://0.0.0.0:3000",
-        "http://127.0.0.1:3000",  # React docker port
-        "http://127.0.0.1:3001",
-        "http://localhost:5173",  # Qwik default port
-        "http://0.0.0.0:5173",
-        "http://127.0.0.1:5173",  # Qwik docker port
-        "http://127.0.0.1:5174",
+        "http://localhost:3000", "http://0.0.0.0:3000", "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001", "http://localhost:5173", "http://0.0.0.0:5173",
+        "http://127.0.0.1:5173", "http://127.0.0.1:5174",
     ]
     ALLOWED_METHODS: list[str] = ["*"]
     ALLOWED_HEADERS: list[str] = ["*"]
@@ -65,21 +75,13 @@ class BackendBaseSettings(pydantic.BaseSettings):
     LOGGING_LEVEL: int = logging.INFO
     LOGGERS: tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
 
-    HASHING_ALGORITHM_LAYER_1: str = decouple.config("HASHING_ALGORITHM_LAYER_1", cast=str)  # type: ignore
-    HASHING_ALGORITHM_LAYER_2: str = decouple.config("HASHING_ALGORITHM_LAYER_2", cast=str)  # type: ignore
-    HASHING_SALT: str = decouple.config("HASHING_SALT", cast=str)  # type: ignore
-    JWT_ALGORITHM: str = decouple.config("JWT_ALGORITHM", cast=str)  # type: ignore
-
-    class Config(pydantic.BaseConfig):
-        case_sensitive: bool = True
-        env_file: str = f"{str(ROOT_DIR)}/.env"
-        validate_assignment: bool = True
+    # HASHING_ALGORITHM_LAYER_1: str = Field(alias="HASHING_ALGORITHM_LAYER_1")
+    # HASHING_ALGORITHM_LAYER_2: str = Field(alias="HASHING_ALGORITHM_LAYER_2")
+    # HASHING_SALT: str = Field(alias="HASHING_SALT")
+    # JWT_ALGORITHM: str = Field(alias="JWT_ALGORITHM", default="HS256")
 
     @property
-    def set_backend_app_attributes(self) -> dict[str, str | bool | None]:
-        """
-        Set all `FastAPI` class' attributes with the custom values defined in `BackendBaseSettings`.
-        """
+    def set_backend_app_attributes(self) -> dict:
         return {
             "title": self.TITLE,
             "version": self.VERSION,
@@ -88,6 +90,4 @@ class BackendBaseSettings(pydantic.BaseSettings):
             "docs_url": self.DOCS_URL,
             "openapi_url": self.OPENAPI_URL,
             "redoc_url": self.REDOC_URL,
-            "openapi_prefix": self.OPENAPI_PREFIX,
-            "api_prefix": self.API_PREFIX,
         }

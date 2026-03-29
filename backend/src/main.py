@@ -2,9 +2,9 @@ import fastapi
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
-from controller.users_controller import router as api_endpoint_router
+from backend.src.routes.user_routes import router as api_endpoint_router
 # from src.config.events import execute_backend_server_event_handler, terminate_backend_server_event_handler
-from config.manager import settings
+from backend.src.config.manager import settings
 
 
 def initialize_backend_application() -> fastapi.FastAPI:
@@ -32,13 +32,13 @@ def initialize_backend_application() -> fastapi.FastAPI:
     return app
 
 
-backend_app: fastapi.FastAPI = initialize_backend_application()
+stars_app: fastapi.FastAPI = initialize_backend_application()
 
 if __name__ == "__main__":
     uvicorn.run(
-        app="main:stars-app",
-        host=settings.SERVER_HOST,
-        port=settings.SERVER_PORT,
+        app="main:stars_app",
+        host="127.0.0.1",
+        port="8000",
         reload=settings.DEBUG,
         workers=settings.SERVER_WORKERS,
         log_level=settings.LOGGING_LEVEL,

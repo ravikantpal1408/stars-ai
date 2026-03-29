@@ -1,29 +1,27 @@
+import os
 from functools import lru_cache
-
-import decouple
-
-from config.settings.base import BackendBaseSettings
-from config.settings.development import BackendDevSettings
-from config.settings.environment import Environment
-# from src.config.settings.production import BackendProdSettings
-# from src.config.settings.staging import BackendStageSettings
-
+from backend.src.config.settings.base import BackendBaseSettings
+from backend.src.config.settings.development import BackendDevSettings
+from backend.src.config.settings.environment import Environment
 
 class BackendSettingsFactory:
     def __init__(self, environment: str):
         self.environment = environment
 
     def __call__(self) -> BackendBaseSettings:
-        if self.environment == Environment.DEVELOPMENT.value:
+        # Check if the environment matches 'development' or 'DEV'
+        if self.environment.lower() in (Environment.DEVELOPMENT.value.lower(), "dev"):
             return BackendDevSettings()
-        # elif self.environment == Environment.STAGING.value:
-        #     return BackendStageSettings()
-        # return BackendProdSettings()
-
+        
+        # Default fallback to Base settings if others aren't ready
+        return BackendBaseSettings()
 
 @lru_cache()
 def get_settings() -> BackendBaseSettings:
-    return BackendSettingsFactory(environment=decouple.config("ENVIRONMENT", default="DEV", cast=str))()  # type: ignore
+    # Use standard os.getenv instead of decouple. 
+    # This is built into Python and never fails with AttributeError.
+    env = os.getenv("ENVIRONMENT", "DEV")
+    return BackendSettingsFactory(environment=env)()
 
-
+# Initialize the settings object
 settings: BackendBaseSettings = get_settings()
