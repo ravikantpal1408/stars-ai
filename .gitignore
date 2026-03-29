@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# C extensions
+*.so
+
+# Environments
+.venv
+venv/
+env/
+.env
+
+# Editor directories and files
+.idea/  # JetBrains IDEs (e.g., PyCharm)
+.vscode/
+
+# FastAPI and Python-specific
+# Database files (if using SQLite)
+*.db
+*.sqlite
+/migrations/*.db
+/migrations/*.sqlite*
+
+# OS-specific files
+.DS_Store # macOS
+Thumbs.db # Windows
+
+# Dependencies
+# Pip
+pip-wheel-metadata/
+*.egg-info/
+.coverage
+
+# Tests and coverage
+.pytest_cache/
+htmlcov/
+
+# FastAPI specific ignore (if using FastAPI Cloud)
+.fastapicloudignore
+.DS_Store
+*.log
+*.tmp
+*.bak
