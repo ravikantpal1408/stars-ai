@@ -1,14 +1,29 @@
 import fastapi
 import uvicorn
+from fastapi import Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.src.routes.user_routes import router as api_endpoint_router
 # from src.config.events import execute_backend_server_event_handler, terminate_backend_server_event_handler
 from backend.src.config.manager import settings
-
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 def initialize_backend_application() -> fastapi.FastAPI:
     app = fastapi.FastAPI(**settings.set_backend_app_attributes)  # type: ignore
+
+    @app.exception_handler(StarletteHTTPException)
+    async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+        if exc.status_code == 404:
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "message": "Oops! This endpoint does not exist.",
+                    "path": request.url.path,
+                    "suggestion": "Check /docs for available endpoints"
+                },
+            )
+        return await fastapi.exception_handlers.http_exception_handler(request, exc)
 
     app.add_middleware(
         CORSMiddleware,
