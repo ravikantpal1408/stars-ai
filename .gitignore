@@ -43,3 +43,5 @@ htmlcov/
 *.log
 *.tmp
 *.bak
+.idea/*
+.idea
