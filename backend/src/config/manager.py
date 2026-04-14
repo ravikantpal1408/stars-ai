@@ -12,13 +12,12 @@ class BackendSettingsFactory:
         # Check if the environment matches 'development' or 'DEV'
         if self.environment.lower() in (Environment.DEVELOPMENT.value.lower(), "dev"):
             return BackendDevSettings()
-        
         # Default fallback to Base settings if others aren't ready
         return BackendBaseSettings()
 
 @lru_cache()
 def get_settings() -> BackendBaseSettings:
-    # Use standard os.getenv instead of decouple. 
+    # Use standard os.getenv instead of decouple.
     # This is built into Python and never fails with AttributeError.
     env = os.getenv("ENVIRONMENT", "DEV")
     return BackendSettingsFactory(environment=env)()

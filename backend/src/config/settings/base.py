@@ -27,6 +27,9 @@ class BackendBaseSettings(BaseSettings):
     SERVER_PORT: int = Field(alias="BACKEND_SERVER_PORT", default=8000)
     SERVER_WORKERS: int = Field(alias="BACKEND_SERVER_WORKERS", default=1)
     
+    # Database Settings
+    DATABASE_URL: str = Field(alias="DATABASE_URL", default="sqlite+aiosqlite:///./test.db")
+    
     API_PREFIX: str = "/api"
     DOCS_URL: str = "/docs"
     OPENAPI_URL: str = "/openapi.json"
@@ -55,9 +58,9 @@ class BackendBaseSettings(BaseSettings):
     # JWT_TOKEN_PREFIX: str = Field(alias="JWT_TOKEN_PREFIX", default="Token")
     # JWT_SECRET_KEY: str = Field(alias="JWT_SECRET_KEY")
     # JWT_SUBJECT: str = Field(alias="JWT_SUBJECT", default="access")
-    # JWT_MIN: int = Field(alias="JWT_MIN", default=60)
-    # JWT_HOUR: int = Field(alias="JWT_HOUR", default=24)
-    # JWT_DAY: int = Field(alias="JWT_DAY", default=7)
+    JWT_MIN: int = Field(alias="JWT_MIN", default=60)
+    JWT_HOUR: int = Field(alias="JWT_HOUR", default=24)
+    JWT_DAY: int = Field(alias="JWT_DAY", default=7)
     
     @property
     def JWT_ACCESS_TOKEN_EXPIRATION_TIME(self) -> int:

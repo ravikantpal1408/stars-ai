@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.src.routes.user_routes import router as api_endpoint_router
-# from src.config.events import execute_backend_server_event_handler, terminate_backend_server_event_handler
+from backend.src.repository.events import initialize_db_connection, dispose_db_connection
 from backend.src.config.manager import settings
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -33,14 +33,14 @@ def initialize_backend_application() -> fastapi.FastAPI:
         allow_headers=settings.ALLOWED_HEADERS,
     )
 
-    # app.add_event_handler(
-    #     "startup",
-    #     execute_backend_server_event_handler(backend_app=app),
-    # )
-    # app.add_event_handler(
-    #     "shutdown",
-    #     terminate_backend_server_event_handler(backend_app=app),
-    # )
+    app.add_event_handler(
+        "startup",
+        lambda: initialize_db_connection(backend_app=app),
+    )
+    app.add_event_handler(
+        "shutdown",
+        lambda: dispose_db_connection(backend_app=app),
+    )
 
     app.include_router(router=api_endpoint_router, prefix=settings.API_PREFIX)
 
