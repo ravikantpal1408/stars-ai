@@ -1,8 +1,8 @@
 import os
 from functools import lru_cache
-from backend.src.config.settings.base import BackendBaseSettings
-from backend.src.config.settings.development import BackendDevSettings
-from backend.src.config.settings.environment import Environment
+from backend.src.config.base import BackendBaseSettings
+from backend.src.config.development import BackendDevSettings
+from backend.src.config.environment import Environment
 
 class BackendSettingsFactory:
     def __init__(self, environment: str):

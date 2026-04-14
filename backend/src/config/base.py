@@ -4,8 +4,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
 # Dynamically find the directory where your .env lives
-# Points to backend/src/ directory (2 levels up from this file)
-ENV_DIR: pathlib.Path = pathlib.Path(__file__).parent.parent.parent.resolve()
+# Points to backend/src/ directory (1 level up from this file)
+ENV_DIR: pathlib.Path = pathlib.Path(__file__).parent.parent.resolve()
 
 class BackendBaseSettings(BaseSettings):
     # This replaces all 'decouple' logic. 

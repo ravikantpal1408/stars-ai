@@ -1,5 +1,5 @@
-from backend.src.config.settings.base import BackendBaseSettings
-from backend.src.config.settings.environment import Environment
+from backend.src.config.base import BackendBaseSettings
+from backend.src.config.environment import Environment
 
 
 class BackendDevSettings(BackendBaseSettings):
