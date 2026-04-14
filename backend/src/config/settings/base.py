@@ -3,14 +3,15 @@ import pathlib
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
-# Dynamically find the root directory where your .env lives
-ROOT_DIR: pathlib.Path = pathlib.Path(__file__).parent.parent.parent.parent.parent.resolve()
+# Dynamically find the directory where your .env lives
+# Points to backend/src/ directory (2 levels up from this file)
+ENV_DIR: pathlib.Path = pathlib.Path(__file__).parent.parent.parent.resolve()
 
 class BackendBaseSettings(BaseSettings):
     # This replaces all 'decouple' logic. 
     # It reads your .env file and maps keys to these variables.
     model_config = SettingsConfigDict(
-        env_file=f"{ROOT_DIR}/.env",
+        env_file=f"{ENV_DIR}/.env",
         case_sensitive=True,
         extra="ignore" 
     )
@@ -28,7 +29,7 @@ class BackendBaseSettings(BaseSettings):
     SERVER_WORKERS: int = Field(alias="BACKEND_SERVER_WORKERS", default=1)
     
     # Database Settings
-    DATABASE_URL: str = Field(alias="DATABASE_URL", default="sqlite+aiosqlite:///./test.db")
+    DATABASE_URL: str = Field(alias="DATABASE_URL_POSTGRES", default="sqlite+aiosqlite:///./test.db")
     
     API_PREFIX: str = "/api"
     DOCS_URL: str = "/docs"

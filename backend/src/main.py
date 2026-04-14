@@ -1,5 +1,6 @@
 import fastapi
 import uvicorn
+from contextlib import asynccontextmanager
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,8 +10,16 @@ from backend.src.repository.events import initialize_db_connection, dispose_db_c
 from backend.src.config.manager import settings
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+@asynccontextmanager
+async def lifespan(app: fastapi.FastAPI):
+    # Startup: Initialize DB connection
+    await initialize_db_connection(backend_app=app)
+    yield
+    # Shutdown: Dispose DB connection
+    await dispose_db_connection(backend_app=app)
+
 def initialize_backend_application() -> fastapi.FastAPI:
-    app = fastapi.FastAPI(**settings.set_backend_app_attributes)  # type: ignore
+    app = fastapi.FastAPI(**settings.set_backend_app_attributes, lifespan=lifespan)  # type: ignore
 
     @app.exception_handler(StarletteHTTPException)
     async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
@@ -31,15 +40,6 @@ def initialize_backend_application() -> fastapi.FastAPI:
         allow_credentials=settings.IS_ALLOWED_CREDENTIALS,
         allow_methods=settings.ALLOWED_METHODS,
         allow_headers=settings.ALLOWED_HEADERS,
-    )
-
-    app.add_event_handler(
-        "startup",
-        lambda: initialize_db_connection(backend_app=app),
-    )
-    app.add_event_handler(
-        "shutdown",
-        lambda: dispose_db_connection(backend_app=app),
     )
 
     app.include_router(router=api_endpoint_router, prefix=settings.API_PREFIX)
