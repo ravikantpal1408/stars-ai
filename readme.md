@@ -1,0 +1,1 @@
+python -m py_compile **path_to_py_file
