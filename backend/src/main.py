@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.src.routes_config import router as api_endpoint_router
-from backend.src.config.events import initialize_db_connection, dispose_db_connection
+from backend.src.db.database import initialize_db_connection, dispose_db_connection
 from backend.src.config.manager import settings
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
