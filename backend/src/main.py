@@ -1,14 +1,16 @@
+from contextlib import asynccontextmanager
+
 import fastapi
 import uvicorn
-from contextlib import asynccontextmanager
 from fastapi import Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
-from backend.src.routes_config import router as api_endpoint_router
-from backend.src.db.database import initialize_db_connection, dispose_db_connection
-from backend.src.config.manager import settings
+from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from backend.src.config.manager import settings
+from backend.src.db.database import dispose_db_connection, initialize_db_connection
+from backend.src.routes_config import router as api_endpoint_router
+
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
@@ -18,18 +20,21 @@ async def lifespan(app: fastapi.FastAPI):
     # Shutdown: Dispose DB connection
     await dispose_db_connection(backend_app=app)
 
+
 def initialize_backend_application() -> fastapi.FastAPI:
     app = fastapi.FastAPI(**settings.set_backend_app_attributes, lifespan=lifespan)  # type: ignore
 
     @app.exception_handler(StarletteHTTPException)
-    async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    async def custom_http_exception_handler(
+        request: Request, exc: StarletteHTTPException
+    ):
         if exc.status_code == 404:
             return JSONResponse(
                 status_code=404,
                 content={
                     "message": "Oops! This endpoint does not exist.",
                     "path": request.url.path,
-                    "suggestion": "Check /docs for available endpoints"
+                    "suggestion": "Check /docs for available endpoints",
                 },
             )
         return await fastapi.exception_handlers.http_exception_handler(request, exc)
@@ -53,7 +58,7 @@ if __name__ == "__main__":
     uvicorn.run(
         app="main:stars_app",
         host="127.0.0.1",
-        port="8000",
+        port=8000,
         reload=settings.DEBUG,
         workers=settings.SERVER_WORKERS,
         log_level=settings.LOGGING_LEVEL,

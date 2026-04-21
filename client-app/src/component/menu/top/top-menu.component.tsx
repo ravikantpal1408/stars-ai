@@ -8,7 +8,7 @@ function TopMenu() {
         {/* Left side: Logo and navigation links */}
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <Typography variant="h6" component="div" sx={{ mr: 3 }}>
-            Logo
+            STARS-AI 🤖
           </Typography>
           <Button color="inherit" component={Link} to="/deal-dashboard">
             Deals Dashboard
