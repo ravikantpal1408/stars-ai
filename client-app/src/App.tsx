@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Users from "./pages/users/users.component";
-import TopMenu from "./component/menu/top/top-menu.component";
-import DealDashboard from "./pages/deal-dashboard/deal-dashboard.component";
-import InvestorDashboard from "./pages/investor-dashboard/investor-dashboard.component";
-import LpAssessment from "./pages/lp-assessment/lp-assessment.component";
-import Maintenance from "./pages/maintenance/maintenance.component";
-import Uploads from "./pages/uploads/uploads.component";
-import EmailTracking from "./pages/email-tracking/email-tracking.component";
+import Users from "./pages/users/users.component.tsx";
+import TopMenu from "./component/menu/top/top-menu.component.tsx";
+import DealDashboard from "./pages/deal-dashboard/deal-dashboard.component.tsx";
+import InvestorDashboard from "./pages/investor-dashboard/investor-dashboard.component.tsx";
+import LpAssessment from "./pages/lp-assessment/lp-assessment.component.tsx";
+import Maintenance from "./pages/maintenance/maintenance.component.tsx";
+import Uploads from "./pages/uploads/uploads.component.tsx";
+import EmailTracking from "./pages/email-tracking/email-tracking.component.tsx";
 // import '@fontsource/roboto/*';
 
 const router = createBrowserRouter([
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
       { path: "/investor-dashboard", element: <InvestorDashboard /> },
       { path: "/lp-assessment", element: <LpAssessment /> },
       { path: "/maintenance", element: <Maintenance /> },
-      { path: "/uploads", element: <Uploads /> }
+      { path: "/uploads", element: <Uploads /> },
     ],
   },
 ]);
