@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { Box, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
 function DealInvestors() {
   const [searchParams] = useSearchParams();
@@ -11,6 +11,9 @@ function DealInvestors() {
         <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
           Deal Investors : ID {id}... Deal Id {dealId}
         </Typography>
+        <Paper elevation={2}>
+          <div style={{ height: 600, width: "100%" }}></div>
+        </Paper>
       </Box>
     </div>
   );

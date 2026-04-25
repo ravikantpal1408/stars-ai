@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
 function Maintenance() {
   return (
@@ -7,6 +7,9 @@ function Maintenance() {
         <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
           Maintenance
         </Typography>
+        <Paper elevation={2}>
+          <div style={{ height: 600, width: "100%" }}></div>
+        </Paper>
       </Box>
     </div>
   );
