@@ -21,6 +21,20 @@ function InvstorDashboard() {
     }
   };
 
+  const handleEdit = (id: number | string) => {
+    console.log("Edit investor with id:", id);
+    // TODO: Implement edit functionality
+    // You can open a modal, navigate to edit page, etc.
+  };
+
+  const handleDelete = (id: number | string) => {
+    console.log("Delete investor with id:", id);
+    // TODO: Implement delete functionality
+    if (window.confirm("Are you sure you want to delete this investor?")) {
+      // Call API to delete
+    }
+  };
+
   // 5. Trigger the fetch on component mount
   useEffect(() => {
     getInvestors();
@@ -37,25 +51,12 @@ function InvstorDashboard() {
           <div style={{ height: 600, width: "100%" }}>
             <DataGrid
               rows={investors}
-              columns={getColumns("investor")}
+              columns={getColumns("investor", handleEdit, handleDelete)}
               loading={loading}
-              showToolbar
               getRowId={(row) => row.id}
               initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 10 },
-                },
-                filter: {
-                  ...investors.filter,
-                  filterModel: {
-                    items: [
-                      {
-                        field: "iinvestor_name",
-                        operator: "contains",
-                        value: "",
-                      },
-                    ],
-                  },
                 },
               }}
               pageSizeOptions={[10, 25, 50]}

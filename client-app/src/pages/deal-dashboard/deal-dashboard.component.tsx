@@ -21,6 +21,20 @@ function DealDashboard() {
     }
   };
 
+  const handleEdit = (id: number | string) => {
+    console.log("Edit deal with id:", id);
+    // TODO: Implement edit functionality
+    // You can open a modal, navigate to edit page, etc.
+  };
+
+  const handleDelete = (id: number | string) => {
+    console.log("Delete deal with id:", id);
+    // TODO: Implement delete functionality
+    if (window.confirm("Are you sure you want to delete this deal?")) {
+      // Call API to delete
+    }
+  };
+
   // 5. Trigger the fetch on component mount
   useEffect(() => {
     getDeals();
@@ -37,9 +51,8 @@ function DealDashboard() {
           <div style={{ height: 600, width: "100%" }}>
             <DataGrid
               rows={deals}
-              columns={getColumns("deals")}
+              columns={getColumns("deals", handleEdit, handleDelete)}
               loading={loading}
-              showToolbar
               getRowId={(row) => row.id}
               initialState={{
                 pagination: {
