@@ -1,20 +1,20 @@
-import { Link } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { Link } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 
 function TopMenu() {
   return (
     <AppBar position="static">
       <Toolbar>
         {/* Left side: Logo and navigation links */}
-        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
           <Typography variant="h6" component="div" sx={{ mr: 3 }}>
             STARS-AI 🤖
           </Typography>
           <Button color="inherit" component={Link} to="/deal-dashboard">
-            Deals Dashboard
+            Deals
           </Button>
           <Button color="inherit" component={Link} to="/investor-dashboard">
-            Investor Dashboard
+            Investor
           </Button>
           <Button color="inherit" component={Link} to="/lp-assessment">
             LP Assessment
@@ -38,7 +38,7 @@ function TopMenu() {
         </Box>
       </Toolbar>
     </AppBar>
-  )
+  );
 }
 
-export default TopMenu
+export default TopMenu;

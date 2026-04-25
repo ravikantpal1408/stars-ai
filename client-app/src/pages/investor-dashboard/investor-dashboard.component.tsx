@@ -39,10 +39,23 @@ function InvstorDashboard() {
               rows={investors}
               columns={getInvestorColumns()}
               loading={loading}
+              showToolbar
               getRowId={(row) => row.id}
               initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 10 },
+                },
+                filter: {
+                  ...investors.filter,
+                  filterModel: {
+                    items: [
+                      {
+                        field: "iinvestor_name",
+                        operator: "contains",
+                        value: "",
+                      },
+                    ],
+                  },
                 },
               }}
               pageSizeOptions={[10, 25, 50]}
