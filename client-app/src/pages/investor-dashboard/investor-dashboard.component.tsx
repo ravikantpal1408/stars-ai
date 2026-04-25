@@ -3,7 +3,7 @@ import InvestorService from "../../services/investors/investors.service";
 import { type Investor } from "../../model/investors.model.ts";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Typography, Paper } from "@mui/material";
-import { getInvestorColumns } from "../../component/grid-columns/columns.component.tsx";
+import { getColumns } from "../../component/grid-columns/columns.component.tsx";
 
 function InvstorDashboard() {
   const [investors, setInvestors] = useState<Investor[]>([]);
@@ -37,7 +37,7 @@ function InvstorDashboard() {
           <div style={{ height: 600, width: "100%" }}>
             <DataGrid
               rows={investors}
-              columns={getInvestorColumns("investor")}
+              columns={getColumns("investor")}
               loading={loading}
               showToolbar
               getRowId={(row) => row.id}
