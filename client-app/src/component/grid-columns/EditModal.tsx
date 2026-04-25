@@ -29,7 +29,7 @@ const EditModal = ({
   };
 
   return (
-    <Dialog open={open} onClose={() => onClose(false)} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={() => onClose(false)} fullWidth maxWidth="xl">
       <DialogTitle>
         Edit {categoryType === "deals" ? "Deal" : "Investor"}
       </DialogTitle>
