@@ -53,6 +53,7 @@ function DealDashboard() {
               rows={deals}
               columns={getColumns("deals", handleEdit, handleDelete)}
               loading={loading}
+              showToolbar
               getRowId={(row) => row.id}
               initialState={{
                 pagination: {

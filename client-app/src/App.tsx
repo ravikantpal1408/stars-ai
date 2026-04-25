@@ -7,6 +7,7 @@ import LpAssessment from "./pages/lp-assessment/lp-assessment.component.tsx";
 import Maintenance from "./pages/maintenance/maintenance.component.tsx";
 import Uploads from "./pages/uploads/uploads.component.tsx";
 import EmailTracking from "./pages/email-tracking/email-tracking.component.tsx";
+import DealInvestors from "./pages/deal-investor/deal-investor.component.tsx";
 // import '@fontsource/roboto/*';
 
 const router = createBrowserRouter([
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Users /> },
       { path: "/deal-dashboard", element: <DealDashboard /> },
+      { path: "/deal-dashboard/investors", element: <DealInvestors /> },
       { path: "/email-tracking", element: <EmailTracking /> },
       { path: "/investor-dashboard", element: <InvestorDashboard /> },
       { path: "/lp-assessment", element: <LpAssessment /> },

@@ -17,7 +17,13 @@ export const getColumns = (
     sortable: false,
     filterable: false,
     renderCell: (params) => (
-      <ActionsColumn id={params.row.id} onEdit={onEdit} onDelete={onDelete} />
+      <ActionsColumn
+        id={params.row.id}
+        deal_id={params.row.deal_id}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        categoryType={gridType}
+      />
     ),
   };
 

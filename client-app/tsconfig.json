@@ -4,4 +4,10 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" },
   ],
+  "compilerOptions": {
+    "jsx": "react-jsx", // Standard for modern React (v17+)
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    // ... other settings
+  },
 }

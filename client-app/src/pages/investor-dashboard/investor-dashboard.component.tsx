@@ -53,6 +53,7 @@ function InvstorDashboard() {
               rows={investors}
               columns={getColumns("investor", handleEdit, handleDelete)}
               loading={loading}
+              showToolbar
               getRowId={(row) => row.id}
               initialState={{
                 pagination: {

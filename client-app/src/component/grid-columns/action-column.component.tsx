@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
 import {
   IconButton,
   Menu,
@@ -9,16 +10,28 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 interface ActionsCellProps {
   id: number | string;
+  deal_id: number | string;
   onEdit?: (id: number | string) => void;
   onDelete?: (id: number | string) => void;
+  onAddInvestor?: (id: number | string, deal_id: number | string) => void;
+  categoryType?: string;
 }
 
-const ActionsColumn = ({ id, onEdit, onDelete }: ActionsCellProps) => {
+const ActionsColumn = ({
+  id,
+  deal_id,
+  onEdit,
+  onDelete,
+  onAddInvestor,
+  categoryType = "",
+}: ActionsCellProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLButtonElement>(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate(); // 2. Initialize navigation
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -29,8 +42,25 @@ const ActionsColumn = ({ id, onEdit, onDelete }: ActionsCellProps) => {
     setAnchorEl(null);
   };
 
-  // We define the menu props as a separate object and cast it to 'any'
-  // This stops the "Property MenuListProps does not exist" error immediately.
+  const handleAction = (
+    event: React.MouseEvent,
+    callback?: (id: number | string) => void,
+  ) => {
+    event.stopPropagation();
+    if (callback) {
+      callback(id);
+    }
+    handleClose();
+  };
+
+  // Specific handler for Add Investor redirect
+  const handleAddInvestorRedirect = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    navigate(`/deal-dashboard/investors?id=${id}&deal_id=${deal_id}`);
+    if (onAddInvestor) onAddInvestor(id, deal_id);
+    handleClose();
+  };
+
   const menuProps: any = {
     id: `actions-menu-${id}`,
     anchorEl: anchorEl,
@@ -59,13 +89,16 @@ const ActionsColumn = ({ id, onEdit, onDelete }: ActionsCellProps) => {
       </IconButton>
 
       <Menu {...menuProps}>
-        <MenuItem
-          onClick={(e) => {
-            e.stopPropagation();
-            if (onEdit) onEdit(id);
-            handleClose();
-          }}
-        >
+        {categoryType === "deals" && (
+          <MenuItem onClick={handleAddInvestorRedirect}>
+            <ListItemIcon>
+              <PersonAddIcon fontSize="small" color="primary" />
+            </ListItemIcon>
+            <ListItemText>Add Investors</ListItemText>
+          </MenuItem>
+        )}
+
+        <MenuItem onClick={(e) => handleAction(e, onEdit)}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
@@ -73,11 +106,7 @@ const ActionsColumn = ({ id, onEdit, onDelete }: ActionsCellProps) => {
         </MenuItem>
 
         <MenuItem
-          onClick={(e) => {
-            e.stopPropagation();
-            if (onDelete) onDelete(id);
-            handleClose();
-          }}
+          onClick={(e) => handleAction(e, onDelete)}
           sx={{ color: "error.main" }}
         >
           <ListItemIcon>
