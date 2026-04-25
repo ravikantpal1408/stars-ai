@@ -13,9 +13,10 @@ import {
   Stack,
   Alert,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 
-// ✅ Final Icon Fix: Using the 'Outlined' suffix consistently
+// ✅ Consistent Icon Imports
 import {
   CloudUpload as CloudUploadIcon,
   CheckCircleOutlined as CheckCircleOutlineIcon,
@@ -29,6 +30,7 @@ function Uploads() {
   const [data, setData] = useState<any[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isValidated, setIsValidated] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<Record<number, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,17 +62,17 @@ function Uploads() {
     const newErrors: Record<number, string> = {};
 
     data.forEach((row, index) => {
-      // Logic: Flag empty rows
+      // 1. Empty Row Check
       if (Object.values(row).every((v) => v === null || v === "")) {
         newErrors[index] = "Empty row detected";
       }
 
-      // Logic: Email validation if column exists
+      // 2. Email validation
       if (row.Email && !String(row.Email).includes("@")) {
         newErrors[index] = "Invalid email format";
       }
 
-      // Logic: Numeric check for Amount
+      // 3. Amount check
       if (row.Amount && isNaN(Number(row.Amount))) {
         newErrors[index] = "Amount must be a number";
       }
@@ -78,6 +80,16 @@ function Uploads() {
 
     setErrors(newErrors);
     setIsValidated(true);
+  };
+
+  const handleFinalUpload = async () => {
+    setIsUploading(true);
+    // Simulate API Call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.log("Pushing to database:", data);
+    alert("Upload Successful!");
+    setIsUploading(false);
+    clearFile();
   };
 
   const clearFile = () => {
@@ -93,11 +105,15 @@ function Uploads() {
   return (
     <div style={{ display: "flex" }}>
       <Box sx={{ p: 4, width: "100%" }}>
-        <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{ mb: 3, fontWeight: "bold" }}
+        >
           Universal Excel Upload
         </Typography>
 
-        {/* Drag & Drop / Click Zone */}
+        {/* Drag & Drop Zone */}
         <Paper
           elevation={0}
           sx={{
@@ -112,7 +128,7 @@ function Uploads() {
             backgroundColor: "#fafafa",
             cursor: "pointer",
             mb: 4,
-            transition: "background-color 0.2s",
+            transition: "0.2s",
             "&:hover": { backgroundColor: "#f0f0f0" },
           }}
           onClick={() => fileInputRef.current?.click()}
@@ -127,16 +143,15 @@ function Uploads() {
           <CloudUploadIcon
             sx={{ fontSize: 50, color: "primary.main", mb: 1 }}
           />
-          <Typography variant="h6">
+          <Typography variant="h6" component="div">
             {fileName
-              ? `File Selected: ${fileName}`
+              ? `Selected: ${fileName}`
               : "Click to select Excel or CSV"}
           </Typography>
         </Paper>
 
         {data.length > 0 && (
           <Paper elevation={3} sx={{ p: 3 }}>
-            {/* Replace the Controls Bar Stack with this */}
             <Stack
               direction="row"
               sx={{
@@ -151,7 +166,7 @@ function Uploads() {
                   component="div"
                   sx={{ fontWeight: "bold" }}
                 >
-                  Preview ({data.length} rows)
+                  Data Preview ({data.length} rows)
                 </Typography>
                 {isValidated && (
                   <Typography
@@ -160,42 +175,57 @@ function Uploads() {
                     sx={{ color: hasErrors ? "error.main" : "success.main" }}
                   >
                     {hasErrors
-                      ? `Validation Failed: ${Object.keys(errors).length} issues`
-                      : "Validation Passed"}
+                      ? `Validation Failed: ${Object.keys(errors).length} errors`
+                      : "Ready for upload"}
                   </Typography>
                 )}
               </Box>
 
+              {/* ACTION BUTTONS */}
               <Stack direction="row" spacing={2}>
                 <Button
+                  variant="text"
                   color="error"
                   startIcon={<DeleteIcon />}
                   onClick={clearFile}
+                  disabled={isUploading}
                 >
                   Clear
                 </Button>
-                <Button variant="outlined" onClick={validateData}>
-                  Validate
+
+                <Button
+                  variant="outlined"
+                  onClick={validateData}
+                  disabled={isUploading}
+                >
+                  Validate Data
                 </Button>
+
                 <Button
                   variant="contained"
                   color="success"
-                  disabled={!isValidated || hasErrors}
-                  onClick={() => console.log("Uploading:", data)}
+                  disabled={!isValidated || hasErrors || isUploading}
+                  onClick={handleFinalUpload}
+                  startIcon={
+                    isUploading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : null
+                  }
                 >
-                  Confirm Upload
+                  {isUploading ? "Uploading..." : "Confirm & Upload"}
                 </Button>
               </Stack>
             </Stack>
+
             {isValidated && hasErrors && (
               <Alert severity="error" sx={{ mb: 2 }}>
-                Please correct the red rows below before proceeding.
+                Please correct the highlighted errors before the final upload.
               </Alert>
             )}
 
             <TableContainer
               sx={{
-                maxHeight: 500,
+                maxHeight: 450,
                 border: "1px solid #e0e0e0",
                 borderRadius: 1,
               }}
@@ -243,7 +273,12 @@ function Uploads() {
                               />
                             )
                           ) : (
-                            "Pending"
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              Pending
+                            </Typography>
                           )}
                         </TableCell>
                         {Object.values(row).map((val: any, i) => (
