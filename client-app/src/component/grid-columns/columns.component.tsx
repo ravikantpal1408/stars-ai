@@ -7,23 +7,41 @@ import type { Investor } from "../../model/investors.model";
  * @returns Array of GridColDef objects configured for displaying Investor data
  */
 export const getInvestorColumns = (
-  isDealGrid: boolean = false,
+  gridType: string = "investor",
 ): GridColDef<Investor>[] => {
-  // Common columns shared by both grids
-  const baseColumns: GridColDef<Investor>[] = [
-    { field: "id", headerName: "ID", width: 70 },
-    {
-      field: "iinvestor_name",
-      headerName: "Investor Name",
-      flex: 1,
-      minWidth: 200,
-    },
-  ];
-
   // Deal Grid Columns
-  if (isDealGrid) {
+  if (gridType === "investor") {
     return [
-      ...baseColumns,
+      { field: "id", headerName: "ID", width: 70 },
+      {
+        field: "iinvestor_name",
+        headerName: "Investor Name",
+        flex: 1,
+        minWidth: 200,
+      },
+      {
+        field: "aum_usd",
+        headerName: "AUM (USD)",
+        width: 180,
+        type: "number",
+        valueFormatter: (value: any) =>
+          value ? `$${Number(value).toLocaleString()}` : "$0",
+      },
+      {
+        field: "country_of_risk_code",
+        headerName: "Country",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      { field: "ien_number", headerName: "IEN", width: 130 },
+      {
+        field: "bqr_date",
+        headerName: "BQR Date",
+        width: 150,
+        valueGetter: (value: any) =>
+          value ? new Date(value).toLocaleDateString() : "N/A",
+      },
       { field: "ien_number", headerName: "IEN", width: 130 },
       {
         field: "nav_usd",
@@ -44,30 +62,5 @@ export const getInvestorColumns = (
   }
 
   // Standard Dashboard Columns
-  return [
-    ...baseColumns,
-    {
-      field: "aum_usd",
-      headerName: "AUM (USD)",
-      width: 180,
-      type: "number",
-      valueFormatter: (value: any) =>
-        value ? `$${Number(value).toLocaleString()}` : "$0",
-    },
-    {
-      field: "country_of_risk_code",
-      headerName: "Country",
-      width: 100,
-      align: "center",
-      headerAlign: "center",
-    },
-    { field: "ien_number", headerName: "IEN", width: 130 },
-    {
-      field: "bqr_date",
-      headerName: "BQR Date",
-      width: 150,
-      valueGetter: (value: any) =>
-        value ? new Date(value).toLocaleDateString() : "N/A",
-    },
-  ];
+  return [];
 };
