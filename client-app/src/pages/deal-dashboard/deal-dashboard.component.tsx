@@ -4,10 +4,24 @@ import DealService from "../../services/deals/deals.service";
 import { useEffect, useState } from "react";
 import type { Deals } from "../../model/deal.model";
 import { getColumns } from "../../component/grid-columns/columns.component.tsx";
+import EditModal from "../../component/grid-columns/EditModal.tsx";
 
 function DealDashboard() {
   const [deals, setDeals] = useState<Deals[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [modalState, setModalState] = useState({
+    open: false,
+    selectedId: null as number | string | null,
+    selectedDealId: null as number | string | null, // New state field
+  });
+
+  const handleCloseModal = (shouldRefresh?: boolean) => {
+    setModalState({ ...modalState, open: false });
+    // 2. If the modal saved successfully, refresh the grid data
+    if (shouldRefresh === true) {
+      getDeals();
+    }
+  };
 
   const getDeals = async () => {
     try {
@@ -21,17 +35,27 @@ function DealDashboard() {
     }
   };
 
-  const handleEdit = (id: number | string) => {
+  const handleEdit = (id: number | string, deal_id: number | string) => {
     console.log("Edit deal with id:", id);
+    setModalState({
+      open: true,
+      selectedId: id,
+      selectedDealId: deal_id,
+    });
     // TODO: Implement edit functionality
     // You can open a modal, navigate to edit page, etc.
   };
 
-  const handleDelete = (id: number | string) => {
-    console.log("Delete deal with id:", id);
-    // TODO: Implement delete functionality
+  const handleDelete = async (id: number | string) => {
     if (window.confirm("Are you sure you want to delete this deal?")) {
-      // Call API to delete
+      try {
+        // Replace with your actual service call:
+        // await DealService.deleteDeal(id);
+        console.log("Deleted:", id);
+        getDeals(); // Refresh after delete
+      } catch (error) {
+        console.error("Delete failed:", error);
+      }
     }
   };
 
@@ -71,6 +95,16 @@ function DealDashboard() {
           </div>
         </Paper>
       </Box>
+
+      {/* The Separate Modal Component */}
+      <EditModal
+        open={modalState.open}
+        // Pass a wrapper to handle the refresh logic
+        onClose={(refresh) => handleCloseModal(refresh)}
+        id={modalState.selectedId}
+        deal_id={modalState.selectedDealId}
+        categoryType="deals"
+      />
     </div>
   );
 }

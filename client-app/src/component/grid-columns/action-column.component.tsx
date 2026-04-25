@@ -15,7 +15,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 interface ActionsCellProps {
   id: number | string;
   deal_id: number | string;
-  onEdit?: (id: number | string) => void;
+  onEdit?: (id: number | string, deal_id: number | string) => void;
   onDelete?: (id: number | string) => void;
   onAddInvestor?: (id: number | string, deal_id: number | string) => void;
   categoryType?: string;
@@ -44,11 +44,12 @@ const ActionsColumn = ({
 
   const handleAction = (
     event: React.MouseEvent,
-    callback?: (id: number | string) => void,
+    callback?: (id: number | string, deal_id: number | string) => void,
   ) => {
     event.stopPropagation();
     if (callback) {
-      callback(id);
+      // Pass both id and deal_id here
+      callback(id, deal_id);
     }
     handleClose();
   };
@@ -61,14 +62,18 @@ const ActionsColumn = ({
     handleClose();
   };
 
+  // Inside ActionsColumn component
   const menuProps: any = {
     id: `actions-menu-${id}`,
     anchorEl: anchorEl,
     open: open,
     onClose: handleClose,
     onClick: (e: React.MouseEvent) => e.stopPropagation(),
-    MenuListProps: {
-      "aria-labelledby": `actions-button-${id}`,
+    // Use slotProps instead of MenuListProps directly
+    slotProps: {
+      list: {
+        "aria-labelledby": `actions-button-${id}`,
+      },
     },
     transformOrigin: { horizontal: "right", vertical: "top" },
     anchorOrigin: { horizontal: "right", vertical: "bottom" },

@@ -5,7 +5,7 @@ import ActionsColumn from "./action-column.component";
 
 export const getColumns = (
   gridType: string = "investor",
-  onEdit?: (id: number | string) => void,
+  onEdit?: (id: number | string, deal_id: number | string) => void,
   onDelete?: (id: number | string) => void,
 ): GridColDef<Investor | Deals>[] => {
   const actionColumn: GridColDef = {
