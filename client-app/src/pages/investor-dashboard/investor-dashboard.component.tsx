@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import InvestorService from "../../services/investors/investors.service";
 import { type Investor } from "../../model/investors.model.ts";
+import { DataGrid } from "@mui/x-data-grid";
+import { Box, Typography, Paper } from "@mui/material";
+import { getInvestorColumns } from "../../component/grid-columns/investor-columns.component.tsx";
 
 function InvstorDashboard() {
   const [investors, setInvestors] = useState<Investor[]>([]);
@@ -24,30 +27,35 @@ function InvstorDashboard() {
   }, []);
 
   return (
-    <div>
-      <h1>Investor Dashboard</h1>
-      {loading ? (
-        <p>Loading investors...</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>AUM (USD)</th>
-              <th>Country</th>
-            </tr>
-          </thead>
-          <tbody>
-            {investors.map((investor) => (
-              <tr key={investor.id}>
-                <td>{investor.iinvestor_name}</td>
-                <td>{investor.aum_usd.toLocaleString()}</td>
-                <td>{investor.country_of_risk_code}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div style={{ display: "flex" }}>
+      <Box sx={{ p: 4, width: "100%" }}>
+        <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+          Investor Dashboard
+        </Typography>
+
+        <Paper elevation={2}>
+          <div style={{ height: 600, width: "100%" }}>
+            <DataGrid
+              rows={investors}
+              columns={getInvestorColumns()}
+              loading={loading}
+              getRowId={(row) => row.id}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 10 },
+                },
+              }}
+              pageSizeOptions={[10, 25, 50]}
+              disableRowSelectionOnClick
+              sx={{
+                "& .MuiDataGrid-columnHeaders": {
+                  backgroundColor: "#f5f5f5",
+                },
+              }}
+            />
+          </div>
+        </Paper>
+      </Box>
     </div>
   );
 }
