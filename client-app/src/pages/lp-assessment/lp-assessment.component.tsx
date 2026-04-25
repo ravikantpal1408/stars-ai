@@ -1,7 +1,13 @@
+import { Box, Typography } from "@mui/material";
+
 function LpAssessment() {
   return (
-    <div>
-      <h1>LP Assessment</h1>
+    <div style={{ display: "flex" }}>
+      <Box sx={{ p: 4, width: "100%" }}>
+        <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+          LP Assessment
+        </Typography>
+      </Box>
     </div>
   );
 }

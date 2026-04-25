@@ -20,6 +20,7 @@ const router = createBrowserRouter([
       { path: "/lp-assessment", element: <LpAssessment /> },
       { path: "/maintenance", element: <Maintenance /> },
       { path: "/uploads", element: <Uploads /> },
+      { path: "/email-tracking", element: <EmailTracking /> },
     ],
   },
 ]);

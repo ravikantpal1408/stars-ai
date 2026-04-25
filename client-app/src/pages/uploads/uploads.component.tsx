@@ -1,8 +1,13 @@
+import { Box, Typography } from "@mui/material";
+
 function Uploads() {
   return (
-    <div>
-      <h1>Uploads Page</h1>
-      <p>This is where you can manage your uploads.</p>
+    <div style={{ display: "flex" }}>
+      <Box sx={{ p: 4, width: "100%" }}>
+        <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+          Uploads
+        </Typography>
+      </Box>
     </div>
   );
 }

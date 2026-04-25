@@ -1,8 +1,13 @@
+import { Box, Typography } from "@mui/material";
+
 function Maintenance() {
   return (
-    <div>
-      <h1>Maintenance Page</h1>
-      <p>Our website is currently undergoing maintenance. Please check back later.</p>
+    <div style={{ display: "flex" }}>
+      <Box sx={{ p: 4, width: "100%" }}>
+        <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+          Maintenance
+        </Typography>
+      </Box>
     </div>
   );
 }
