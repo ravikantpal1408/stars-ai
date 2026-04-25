@@ -15,11 +15,13 @@ import {
   Tooltip,
 } from "@mui/material";
 
-// ✅ Direct Path Imports: These are the safest for Vite 8 / Rollup resolution
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-// import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-// import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import DeleteIcon from "@mui/icons-material/Delete";
+// ✅ Final Icon Fix: Using the 'Outlined' suffix consistently
+import {
+  CloudUpload as CloudUploadIcon,
+  CheckCircleOutlined as CheckCircleOutlineIcon,
+  ErrorOutlined as ErrorOutlineIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
 
 import * as XLSX from "xlsx";
 
