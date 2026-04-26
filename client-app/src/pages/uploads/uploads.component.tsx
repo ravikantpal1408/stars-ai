@@ -62,7 +62,18 @@ function Uploads() {
 
     try {
       setIsUploading(true);
-      await UploadService.validateExcelUpload(selectedFile);
+      const result = await UploadService.validateExcelUpload(selectedFile);
+      setData(result.data);
+
+      // Merge backend errors with frontend errors
+      if (result.errors) {
+        const mergedErrors = { ...newErrors, ...result.errors };
+        setErrors(mergedErrors);
+        setIsValidated(true);
+        return;
+      }
+
+      setErrors(newErrors);
     } catch (error: any) {
       console.log(error);
     } finally {
