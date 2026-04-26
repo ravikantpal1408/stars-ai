@@ -63,8 +63,8 @@ function Uploads() {
     try {
       setIsUploading(true);
       await UploadService.validateExcelUpload(selectedFile);
-    } catch (error) {
-      alert("Backend validation failed.");
+    } catch (error: any) {
+      console.log(error);
     } finally {
       setIsUploading(false);
     }
@@ -120,8 +120,8 @@ function Uploads() {
           >
             <MUI.MenuItem onClick={handleMenuClose}>
               <a
-                href="/assets/Investor_Template.xlsx"
-                download="Investor_Template.xlsx"
+                href="/assets/templates/New_Investor_Upload.xlsx"
+                download="New_Investor_Upload.xlsx"
                 style={{
                   textDecoration: "none",
                   color: "inherit",
@@ -130,7 +130,7 @@ function Uploads() {
                 }}
               >
                 <Icons.FileDownload fontSize="small" sx={{ mr: 1 }} />
-                Investor Template (.xlsx)
+                New Investor Template (.xlsx)
               </a>
             </MUI.MenuItem>
           </MUI.Menu>
