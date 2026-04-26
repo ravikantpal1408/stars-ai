@@ -1,45 +1,18 @@
 import React, { useState, useRef } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Stack,
-  Alert,
-  Tooltip,
-  CircularProgress,
-  IconButton,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-
-import {
-  CloudUpload as CloudUploadIcon,
-  CheckCircleOutlined as CheckCircleOutlineIcon,
-  ErrorOutlined as ErrorOutlineIcon,
-  MoreVert as MoreVertIcon,
-  Delete as DeleteIcon,
-  FileDownload as FileDownloadIcon,
-} from "@mui/icons-material";
-
+import * as MUI from "@mui/material";
+import * as Icons from "@mui/icons-material";
 import * as XLSX from "xlsx";
 import UploadService from "../../services/uploads/upload.service";
 
 function Uploads() {
   const [data, setData] = useState<any[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isValidated, setIsValidated] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<Record<number, string>>({});
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const openMenu = Boolean(anchorEl);
 
@@ -51,6 +24,7 @@ function Uploads() {
     setFileName(file.name);
     setIsValidated(false);
     setErrors({});
+
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
@@ -67,48 +41,29 @@ function Uploads() {
     reader.readAsArrayBuffer(file);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) =>
+    setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const validateData = async () => {
     const newErrors: Record<number, string> = {};
-
     data.forEach((row, index) => {
-      // 1. Empty Row Check
-      if (Object.values(row).every((v) => v === null || v === "")) {
+      if (Object.values(row).every((v) => v === null || v === ""))
         newErrors[index] = "Empty row detected";
-      }
-
-      // 2. Email validation
-      if (row.Email && !String(row.Email).includes("@")) {
+      if (row.Email && !String(row.Email).includes("@"))
         newErrors[index] = "Invalid email format";
-      }
-
-      // 3. Amount check
-      if (row.Amount && isNaN(Number(row.Amount))) {
+      if (row.Amount && isNaN(Number(row.Amount)))
         newErrors[index] = "Amount must be a number";
-      }
     });
 
     setErrors(newErrors);
     setIsValidated(true);
-
-    // 2. Stop if local validation fails
-    if (Object.keys(newErrors).length > 0) return;
-
-    const formData = new FormData();
-    formData.append("file", selectedFile); // Matches FastAPI's: file: UploadFile
+    if (Object.keys(newErrors).length > 0 || !selectedFile) return;
 
     try {
       setIsUploading(true);
-
-      // Call your new service method
-      const result = await UploadService.validateExcelUpload(selectedFile);
-
-      console.log("Backend response:", result);
+      await UploadService.validateExcelUpload(selectedFile);
     } catch (error) {
-      console.error("Upload error:", error);
       alert("Backend validation failed.");
     } finally {
       setIsUploading(false);
@@ -117,9 +72,7 @@ function Uploads() {
 
   const handleFinalUpload = async () => {
     setIsUploading(true);
-    // Simulate API Call
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Pushing to database:", data);
     alert("Upload Successful!");
     setIsUploading(false);
     clearFile();
@@ -135,45 +88,39 @@ function Uploads() {
 
   const hasErrors = Object.keys(errors).length > 0;
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   return (
     <div style={{ display: "flex" }}>
-      <Box sx={{ p: 4, width: "100%" }}>
-        <Stack
+      <MUI.Box sx={{ p: 4, width: "100%" }}>
+        {/* HEADER SECTION */}
+        <MUI.Stack
           direction="row"
           spacing={1}
-          sx={{
-            mb: 3,
-            display: "flex",
-            alignItems: "center", // Moving alignment here solves the TS error
-          }}
+          sx={{ mb: 3, alignItems: "center" }}
         >
-          <Typography
+          <MUI.Typography
             variant="h4"
             component="h1"
-            sx={{ mb: 3, fontWeight: "bold" }}
+            sx={{ fontWeight: "bold" }}
           >
             Universal Excel Upload
-          </Typography>
+          </MUI.Typography>
 
-          <Tooltip title="Templates">
-            <IconButton onClick={handleMenuClick}>
-              <MoreVertIcon />
-            </IconButton>
-          </Tooltip>
-          <Menu
+          <MUI.Tooltip title="Templates">
+            <MUI.IconButton onClick={handleMenuClick}>
+              <Icons.MoreVert />
+            </MUI.IconButton>
+          </MUI.Tooltip>
+
+          <MUI.Menu
             anchorEl={anchorEl}
             open={openMenu}
             onClose={handleMenuClose}
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             transformOrigin={{ vertical: "top", horizontal: "right" }}
           >
-            <MenuItem onClick={handleMenuClose}>
+            <MUI.MenuItem onClick={handleMenuClose}>
               <a
-                href="/assets/Investor_Template.xlsx" // Path to your file in the public folder
+                href="/assets/Investor_Template.xlsx"
                 download="Investor_Template.xlsx"
                 style={{
                   textDecoration: "none",
@@ -182,14 +129,15 @@ function Uploads() {
                   alignItems: "center",
                 }}
               >
-                <FileDownloadIcon fontSize="small" sx={{ mr: 1 }} />
+                <Icons.FileDownload fontSize="small" sx={{ mr: 1 }} />
                 Investor Template (.xlsx)
               </a>
-            </MenuItem>
-            {/* You can add more templates here easily */}
-          </Menu>
-        </Stack>
-        <Paper
+            </MUI.MenuItem>
+          </MUI.Menu>
+        </MUI.Stack>
+
+        {/* UPLOAD ZONE */}
+        <MUI.Paper
           elevation={0}
           sx={{
             p: 5,
@@ -215,19 +163,19 @@ function Uploads() {
             accept=".xlsx, .xls, .csv"
             onChange={handleFileUpload}
           />
-          <CloudUploadIcon
+          <Icons.CloudUpload
             sx={{ fontSize: 50, color: "primary.main", mb: 1 }}
           />
-          <Typography variant="h6" component="div">
+          <MUI.Typography variant="h6">
             {fileName
               ? `Selected: ${fileName}`
               : "Click to select Excel or CSV"}
-          </Typography>
-        </Paper>
+          </MUI.Typography>
+        </MUI.Paper>
 
         {data.length > 0 && (
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Stack
+          <MUI.Paper elevation={3} sx={{ p: 3 }}>
+            <MUI.Stack
               direction="row"
               sx={{
                 justifyContent: "space-between",
@@ -235,139 +183,131 @@ function Uploads() {
                 mb: 3,
               }}
             >
-              <Box>
-                <Typography
-                  variant="subtitle1"
-                  component="div"
-                  sx={{ fontWeight: "bold" }}
-                >
+              <MUI.Box>
+                <MUI.Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                   Data Preview ({data.length} rows)
-                </Typography>
+                </MUI.Typography>
                 {isValidated && (
-                  <Typography
+                  <MUI.Typography
                     variant="body2"
-                    component="div"
                     sx={{ color: hasErrors ? "error.main" : "success.main" }}
                   >
                     {hasErrors
                       ? `Validation Failed: ${Object.keys(errors).length} errors`
                       : "Ready for upload"}
-                  </Typography>
+                  </MUI.Typography>
                 )}
-              </Box>
+              </MUI.Box>
 
-              {/* ACTION BUTTONS */}
-              <Stack direction="row" spacing={2}>
-                <Button
+              <MUI.Stack direction="row" spacing={2}>
+                <MUI.Button
                   variant="text"
                   color="error"
-                  startIcon={<DeleteIcon />}
+                  startIcon={<Icons.Delete />}
                   onClick={clearFile}
                   disabled={isUploading}
                 >
                   Clear
-                </Button>
-
-                <Button
+                </MUI.Button>
+                <MUI.Button
                   variant="outlined"
                   onClick={validateData}
                   disabled={isUploading}
                 >
                   Validate Data
-                </Button>
-
-                <Button
+                </MUI.Button>
+                <MUI.Button
                   variant="contained"
                   color="success"
                   disabled={!isValidated || hasErrors || isUploading}
                   onClick={handleFinalUpload}
                   startIcon={
                     isUploading ? (
-                      <CircularProgress size={20} color="inherit" />
+                      <MUI.CircularProgress size={20} color="inherit" />
                     ) : null
                   }
                 >
                   {isUploading ? "Uploading..." : "Confirm & Upload"}
-                </Button>
-              </Stack>
-            </Stack>
+                </MUI.Button>
+              </MUI.Stack>
+            </MUI.Stack>
 
             {isValidated && hasErrors && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <MUI.Alert severity="error" sx={{ mb: 2 }}>
                 Please correct the highlighted errors before the final upload.
-              </Alert>
+              </MUI.Alert>
             )}
 
-            <TableContainer
+            <MUI.TableContainer
               sx={{
                 maxHeight: 450,
                 border: "1px solid #e0e0e0",
                 borderRadius: 1,
               }}
             >
-              <Table stickyHeader size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell
+              <MUI.Table stickyHeader size="small">
+                <MUI.TableHead>
+                  <MUI.TableRow>
+                    <MUI.TableCell
                       sx={{ bgcolor: "#f5f5f5", fontWeight: "bold", width: 80 }}
                     >
                       Status
-                    </TableCell>
+                    </MUI.TableCell>
                     {Object.keys(data[0]).map((key) => (
-                      <TableCell
+                      <MUI.TableCell
                         key={key}
                         sx={{ fontWeight: "bold", bgcolor: "#f5f5f5" }}
                       >
                         {key}
-                      </TableCell>
+                      </MUI.TableCell>
                     ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+                  </MUI.TableRow>
+                </MUI.TableHead>
+                <MUI.TableBody>
                   {data.map((row, index) => {
                     const errorMsg = errors[index];
                     return (
-                      <TableRow
+                      <MUI.TableRow
                         key={index}
                         hover
                         sx={{ bgcolor: errorMsg ? "#fff5f5" : "inherit" }}
                       >
-                        <TableCell>
+                        <MUI.TableCell>
                           {isValidated ? (
                             errorMsg ? (
-                              <Tooltip title={errorMsg}>
-                                <ErrorOutlineIcon
+                              <MUI.Tooltip title={errorMsg}>
+                                <Icons.ErrorOutlined
                                   color="error"
                                   fontSize="small"
                                 />
-                              </Tooltip>
+                              </MUI.Tooltip>
                             ) : (
-                              <CheckCircleOutlineIcon
+                              <Icons.CheckCircleOutlined
                                 color="success"
                                 fontSize="small"
                               />
                             )
                           ) : (
-                            <Typography
+                            <MUI.Typography
                               variant="caption"
                               color="text.secondary"
                             >
                               Pending
-                            </Typography>
+                            </MUI.Typography>
                           )}
-                        </TableCell>
+                        </MUI.TableCell>
                         {Object.values(row).map((val: any, i) => (
-                          <TableCell key={i}>{String(val)}</TableCell>
+                          <MUI.TableCell key={i}>{String(val)}</MUI.TableCell>
                         ))}
-                      </TableRow>
+                      </MUI.TableRow>
                     );
                   })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
+                </MUI.TableBody>
+              </MUI.Table>
+            </MUI.TableContainer>
+          </MUI.Paper>
         )}
-      </Box>
+      </MUI.Box>
     </div>
   );
 }
