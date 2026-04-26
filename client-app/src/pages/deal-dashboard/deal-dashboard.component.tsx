@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from "@mui/material";
+import * as MUI from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import DealService from "../../services/deals/deals.service";
 import { useCallback, useEffect, useState } from "react";
@@ -65,14 +65,14 @@ function DealDashboard() {
   }, [getDeals]);
 
   return (
-    <div style={{ display: "flex" }}>
-      <Box sx={{ p: 4, width: "100%" }}>
-        <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+    <MUI.Box style={{ display: "flex" }}>
+      <MUI.Box sx={{ p: 4, width: "100%" }}>
+        <MUI.Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
           Deal Dashboard
-        </Typography>
+        </MUI.Typography>
 
-        <Paper elevation={2}>
-          <div style={{ height: 600, width: "100%" }}>
+        <MUI.Paper elevation={2}>
+          <MUI.Box style={{ height: 600, width: "100%" }}>
             <DataGrid
               rows={deals}
               columns={getColumns("deals", handleEdit, handleDelete)}
@@ -92,9 +92,9 @@ function DealDashboard() {
                 },
               }}
             />
-          </div>
-        </Paper>
-      </Box>
+          </MUI.Box>
+        </MUI.Paper>
+      </MUI.Box>
 
       {/* The Separate Modal Component */}
       <EditModal
@@ -105,7 +105,7 @@ function DealDashboard() {
         deal_id={modalState.selectedDealId}
         categoryType="deals"
       />
-    </div>
+    </MUI.Box>
   );
 }
 
