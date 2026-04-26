@@ -2,6 +2,7 @@ import fastapi
 
 from backend.src.routes.deal_routes import router as deal_router
 from backend.src.routes.investor_routes import router as investors_router
+from backend.src.routes.uploads_routes import router as uploads_routes
 
 router = fastapi.APIRouter()
 
@@ -11,3 +12,4 @@ all routes will be added here and then this router will be included in the main 
 
 router.include_router(router=investors_router)
 router.include_router(router=deal_router)
+router.include_router(router=uploads_routes)

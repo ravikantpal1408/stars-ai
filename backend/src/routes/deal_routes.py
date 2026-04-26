@@ -1,6 +1,5 @@
 import fastapi
 from fastapi import Depends, status
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.db.database import get_db

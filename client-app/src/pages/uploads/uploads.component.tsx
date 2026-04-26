@@ -16,7 +16,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-// ✅ Consistent Icon Imports
 import {
   CloudUpload as CloudUploadIcon,
   CheckCircleOutlined as CheckCircleOutlineIcon,
@@ -25,10 +24,14 @@ import {
 } from "@mui/icons-material";
 
 import * as XLSX from "xlsx";
+import UploadService from "../../services/uploads/upload.service";
 
 function Uploads() {
   const [data, setData] = useState<any[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const [isValidated, setIsValidated] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<Record<number, string>>({});
@@ -38,6 +41,7 @@ function Uploads() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setSelectedFile(file);
     setFileName(file.name);
     setIsValidated(false);
     setErrors({});
@@ -55,10 +59,10 @@ function Uploads() {
         console.error("Excel Error:", err);
       }
     };
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   };
 
-  const validateData = () => {
+  const validateData = async () => {
     const newErrors: Record<number, string> = {};
 
     data.forEach((row, index) => {
@@ -80,6 +84,26 @@ function Uploads() {
 
     setErrors(newErrors);
     setIsValidated(true);
+
+    // 2. Stop if local validation fails
+    if (Object.keys(newErrors).length > 0) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile); // Matches FastAPI's: file: UploadFile
+
+    try {
+      setIsUploading(true);
+
+      // Call your new service method
+      const result = await UploadService.validateExcelUpload(selectedFile);
+
+      console.log("Backend response:", result);
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Backend validation failed.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFinalUpload = async () => {

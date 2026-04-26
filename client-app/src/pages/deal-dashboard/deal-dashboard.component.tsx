@@ -1,7 +1,7 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import DealService from "../../services/deals/deals.service";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Deals } from "../../model/deal.model";
 import { getColumns } from "../../component/grid-columns/columns.component.tsx";
 import EditModal from "../../component/grid-columns/EditModal.tsx";
@@ -23,17 +23,17 @@ function DealDashboard() {
     }
   };
 
-  const getDeals = async () => {
+  const getDeals = useCallback(async () => {
     try {
       setLoading(true);
       const data = await DealService.getAllDeals();
       setDeals(data);
     } catch (error) {
-      console.error("Failed to load investors:", error);
+      console.error("Failed to load deals:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleEdit = (id: number | string, deal_id: number | string) => {
     console.log("Edit deal with id:", id);
@@ -62,7 +62,7 @@ function DealDashboard() {
   // 5. Trigger the fetch on component mount
   useEffect(() => {
     getDeals();
-  }, []);
+  }, [getDeals]);
 
   return (
     <div style={{ display: "flex" }}>
