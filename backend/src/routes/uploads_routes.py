@@ -1,5 +1,5 @@
 import fastapi
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.db.database import get_db

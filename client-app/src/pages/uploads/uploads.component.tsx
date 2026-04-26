@@ -14,13 +14,18 @@ import {
   Alert,
   Tooltip,
   CircularProgress,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 
 import {
   CloudUpload as CloudUploadIcon,
   CheckCircleOutlined as CheckCircleOutlineIcon,
   ErrorOutlined as ErrorOutlineIcon,
+  MoreVert as MoreVertIcon,
   Delete as DeleteIcon,
+  FileDownload as FileDownloadIcon,
 } from "@mui/icons-material";
 
 import * as XLSX from "xlsx";
@@ -31,11 +36,12 @@ function Uploads() {
   const [fileName, setFileName] = useState<string | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isValidated, setIsValidated] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<Record<number, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const openMenu = Boolean(anchorEl);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,7 +51,6 @@ function Uploads() {
     setFileName(file.name);
     setIsValidated(false);
     setErrors({});
-
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
@@ -60,6 +65,10 @@ function Uploads() {
       }
     };
     reader.readAsArrayBuffer(file);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const validateData = async () => {
@@ -126,18 +135,60 @@ function Uploads() {
 
   const hasErrors = Object.keys(errors).length > 0;
 
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   return (
     <div style={{ display: "flex" }}>
       <Box sx={{ p: 4, width: "100%" }}>
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{ mb: 3, fontWeight: "bold" }}
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            mb: 3,
+            display: "flex",
+            alignItems: "center", // Moving alignment here solves the TS error
+          }}
         >
-          Universal Excel Upload
-        </Typography>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ mb: 3, fontWeight: "bold" }}
+          >
+            Universal Excel Upload
+          </Typography>
 
-        {/* Drag & Drop Zone */}
+          <Tooltip title="Templates">
+            <IconButton onClick={handleMenuClick}>
+              <MoreVertIcon />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleMenuClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <MenuItem onClick={handleMenuClose}>
+              <a
+                href="/assets/Investor_Template.xlsx" // Path to your file in the public folder
+                download="Investor_Template.xlsx"
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <FileDownloadIcon fontSize="small" sx={{ mr: 1 }} />
+                Investor Template (.xlsx)
+              </a>
+            </MenuItem>
+            {/* You can add more templates here easily */}
+          </Menu>
+        </Stack>
         <Paper
           elevation={0}
           sx={{
