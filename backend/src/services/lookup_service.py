@@ -1,11 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.repository.deals_repo import DealRepository
+from backend.src.repository.lookup_repo import LookupRepository
 
 
-class DealService:
+class LookupService:
     def __init__(self, db: AsyncSession):
-        self.repository = DealRepository(db)
+        self.repository = LookupRepository(db)
 
     async def get_all_deals(self):
         # You could add caching or filtering logic here

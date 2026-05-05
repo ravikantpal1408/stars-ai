@@ -9,9 +9,11 @@ router = fastapi.APIRouter(prefix="/investors", tags=["investors"])
 
 
 @router.get("", status_code=status.HTTP_200_OK)
-async def read_investors(db: AsyncSession = Depends(get_db)):
+async def read_investors(
+    page: int = 1, page_size: int = 10, db: AsyncSession = Depends(get_db)
+):
     service = InvestorService(db)
-    return await service.get_all_investors()
+    return await service.get_all_investors(page=page, page_size=page_size)
 
 
 # @router.post("/seed", status_code=status.HTTP_201_CREATED)

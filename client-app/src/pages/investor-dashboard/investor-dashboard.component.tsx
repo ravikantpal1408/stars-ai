@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import InvestorService from "../../services/investors/investors.service";
 import { type Investor } from "../../model/investors.model.ts";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, type GridPaginationModel } from "@mui/x-data-grid";
 import { Box, Typography, Paper } from "@mui/material";
 import { getColumns } from "../../component/grid-columns/columns.component.tsx";
 
@@ -9,36 +9,45 @@ function InvstorDashboard() {
   const [investors, setInvestors] = useState<Investor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const getInvestors = async () => {
+  // 1. Add state for pagination and total count
+  const [rowCount, setRowCount] = useState(0);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0, // MUI is 0-indexed
+    pageSize: 10,
+  });
+
+  // 2. Update fetch function to accept pagination params
+  const getInvestors = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await InvestorService.getAllInvestors();
-      setInvestors(data);
+
+      // Note: Backend usually expects 1-indexed pages, so we add 1
+      const response = await InvestorService.getAllInvestors(
+        paginationModel.page + 1,
+        paginationModel.pageSize,
+      );
+
+      // Assuming your API now returns { data: Investor[], total: number }
+      // If it only returns the list, you'll need a separate endpoint for the count
+      setInvestors(response.data);
+      setRowCount(response.total);
     } catch (error) {
       console.error("Failed to load investors:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [paginationModel]);
 
-  const handleEdit = (id: number | string) => {
-    console.log("Edit investor with id:", id);
-    // TODO: Implement edit functionality
-    // You can open a modal, navigate to edit page, etc.
-  };
-
-  const handleDelete = (id: number | string) => {
-    console.log("Delete investor with id:", id);
-    // TODO: Implement delete functionality
-    if (window.confirm("Are you sure you want to delete this investor?")) {
-      // Call API to delete
-    }
-  };
-
-  // 5. Trigger the fetch on component mount
   useEffect(() => {
     getInvestors();
-  }, []);
+  }, [getInvestors]);
+
+  const handleEdit = (id: number | string) => {
+    console.log("Edit:", id);
+  };
+  const handleDelete = (id: number | string) => {
+    console.log("Delete:", id);
+  };
 
   return (
     <div style={{ display: "flex" }}>
@@ -53,19 +62,16 @@ function InvstorDashboard() {
               rows={investors}
               columns={getColumns("investor", handleEdit, handleDelete)}
               loading={loading}
-              showToolbar
               getRowId={(row) => row.id}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
-              }}
+              // 3. Server-side Pagination Props
+              paginationMode="server" // Crucial: tells DataGrid not to paginate locally
+              rowCount={rowCount}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
               pageSizeOptions={[10, 25, 50]}
               disableRowSelectionOnClick
               sx={{
-                "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: "#f5f5f5",
-                },
+                "& .MuiDataGrid-columnHeaders": { backgroundColor: "#f5f5f5" },
               }}
             />
           </div>

@@ -3,9 +3,8 @@ import io
 import pandas as pd
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import Null
 
-from backend.src.repository.upload import UploadRepository
+from backend.src.repository.upload_repo import UploadRepository
 
 
 class UploadService:
