@@ -27,7 +27,6 @@ const InvestorService = {
       throw new Error(`Failed to fetch investors. Status: ${response.status}`);
     }
 
-    // Expecting the backend to return: { "data": [...], "total": 100 }
     return response.json();
   },
 };

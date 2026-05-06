@@ -27,8 +27,6 @@ function InvstorDashboard() {
         paginationModel.pageSize,
       );
 
-      // Assuming your API now returns { data: Investor[], total: number }
-      // If it only returns the list, you'll need a separate endpoint for the count
       setInvestors(response.data);
       setRowCount(response.total);
     } catch (error) {
