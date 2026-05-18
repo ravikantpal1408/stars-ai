@@ -65,7 +65,6 @@ function Uploads() {
       const result = await UploadService.validateExcelUpload(selectedFile);
       setData(result.data);
 
-      // Merge backend errors with frontend errors
       if (result.errors) {
         const mergedErrors = { ...newErrors, ...result.errors };
         setErrors(mergedErrors);
@@ -100,7 +99,14 @@ function Uploads() {
   const hasErrors = Object.keys(errors).length > 0;
 
   return (
-    <div style={{ display: "flex" }}>
+    <MUI.Box
+      sx={{
+        display: "flex",
+        bgcolor: "background.default",
+        color: "text.primary",
+        minHeight: "100vh",
+      }}
+    >
       <MUI.Box sx={{ p: 4, width: "100%" }}>
         {/* HEADER SECTION */}
         <MUI.Stack
@@ -158,12 +164,16 @@ function Uploads() {
               ? hasErrors
                 ? "error.light"
                 : "success.light"
-              : "#ccc",
-            backgroundColor: "#fafafa",
+              : "divider", // Uses the theme standard separation border color
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "action.hover" : "grey.50",
             cursor: "pointer",
             mb: 4,
             transition: "0.2s",
-            "&:hover": { backgroundColor: "#f0f0f0" },
+            "&:hover": {
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "action.selected" : "grey.100",
+            },
           }}
           onClick={() => fileInputRef.current?.click()}
         >
@@ -252,7 +262,8 @@ function Uploads() {
             <MUI.TableContainer
               sx={{
                 maxHeight: 450,
-                border: "1px solid #e0e0e0",
+                border: "1px solid",
+                borderColor: "divider",
                 borderRadius: 1,
               }}
             >
@@ -260,14 +271,27 @@ function Uploads() {
                 <MUI.TableHead>
                   <MUI.TableRow>
                     <MUI.TableCell
-                      sx={{ bgcolor: "#f5f5f5", fontWeight: "bold", width: 80 }}
+                      sx={{
+                        bgcolor: (theme) =>
+                          theme.palette.mode === "dark"
+                            ? "background.paper"
+                            : "grey.100",
+                        fontWeight: "bold",
+                        width: 80,
+                      }}
                     >
                       Status
                     </MUI.TableCell>
                     {Object.keys(data[0]).map((key) => (
                       <MUI.TableCell
                         key={key}
-                        sx={{ fontWeight: "bold", bgcolor: "#f5f5f5" }}
+                        sx={{
+                          fontWeight: "bold",
+                          bgcolor: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "background.paper"
+                              : "grey.100",
+                        }}
                       >
                         {key}
                       </MUI.TableCell>
@@ -281,7 +305,15 @@ function Uploads() {
                       <MUI.TableRow
                         key={index}
                         hover
-                        sx={{ bgcolor: errorMsg ? "#fff5f5" : "inherit" }}
+                        sx={{
+                          // Dynamically applies faint red or keeps context background based on dark/light mode
+                          bgcolor: errorMsg
+                            ? (theme) =>
+                                theme.palette.mode === "dark"
+                                  ? "rgba(215, 30, 40, 0.15)"
+                                  : "#fff5f5"
+                            : "inherit",
+                        }}
                       >
                         <MUI.TableCell>
                           {isValidated ? (
@@ -319,7 +351,7 @@ function Uploads() {
           </MUI.Paper>
         )}
       </MUI.Box>
-    </div>
+    </MUI.Box>
   );
 }
 

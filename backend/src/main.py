@@ -37,7 +37,7 @@ def initialize_backend_application() -> fastapi.FastAPI:
                     "suggestion": "Check /docs for available endpoints",
                 },
             )
-        return await fastapi.exception_handlers.http_exception_handler(request, exc)
+        return await fastapi.exception_handlers.http_exception_handler(request, exc)  # pyright: ignore[reportAttributeAccessIssue]
 
     app.add_middleware(
         CORSMiddleware,
