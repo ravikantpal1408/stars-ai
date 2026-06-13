@@ -14,7 +14,7 @@ env/
 
 # Editor directories and files
 .idea/  # JetBrains IDEs (e.g., PyCharm)
-.vscode/
+
 
 # FastAPI and Python-specific
 # Database files (if using SQLite)

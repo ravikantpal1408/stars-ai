@@ -56,7 +56,7 @@ stars_app: fastapi.FastAPI = initialize_backend_application()
 
 if __name__ == "__main__":
     uvicorn.run(
-        app="main:stars_app",
+        app="backend.src.main:stars_app",
         host="127.0.0.1",
         port=8000,
         reload=settings.DEBUG,
