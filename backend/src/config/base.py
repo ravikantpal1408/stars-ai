@@ -29,7 +29,7 @@ class BackendBaseSettings(BaseSettings):
     SERVER_WORKERS: int = Field(alias="BACKEND_SERVER_WORKERS", default=1)
     
     # Database Settings
-    DATABASE_URL: str = Field(alias="DATABASE_URL_POSTGRES", default="sqlite+aiosqlite:///./test.db")
+    DATABASE_URL: str = Field(alias="DATABASE_URL_POSTGRES", default="postgresql+asyncpg://postgres:secretpassword@localhost:5432/ravikantpal")
     
     API_PREFIX: str = "/api"
     DOCS_URL: str = "/docs"

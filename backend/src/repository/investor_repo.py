@@ -1,30 +1,32 @@
-from sqlalchemy import text
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.investors_model import Investor
-
+from backend.src.dtos.investors_dto import Investor
+from backend.src.db.entities.InvestorTable import InvestorTable
 
 class InvestorRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def fetch_all(self, page: int = 1, page_size: int = 10):
-
+    async def fetch_all(self, page: int = 1, page_size: int = 10) -> list[Investor]:
         offset = (page - 1) * page_size
 
-        query = text("""
-            SELECT * FROM stars_investor_tbl
-            ORDER BY id DESC
-            LIMIT :limit OFFSET :offset
-        """)
+        query = (
+            select(InvestorTable)
+            .order_by(InvestorTable.id.desc())
+            .limit(page_size)
+            .offset(offset)
+        )
 
-        result = await self.db.execute(query, {"limit": page_size, "offset": offset})
-        rows = result.mappings().all()
+        result = await self.db.execute(query)
+        db_investors = result.scalars().all()
 
-        return [Investor(**row) for row in rows]
+        return [Investor.model_validate(investor) for investor in db_investors]
 
     async def get_total_count(self) -> int:
-        query = text("SELECT COUNT(*) FROM stars_investor_tbl")
+        query = select(func.count()).select_from(InvestorTable)
+        
         result = await self.db.execute(query)
         count = result.scalar()
+        
         return count if count is not None else 0

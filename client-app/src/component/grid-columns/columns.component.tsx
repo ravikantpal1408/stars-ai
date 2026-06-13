@@ -75,7 +75,7 @@ export const getColumns = (
       actionColumn,
       { field: "id", headerName: "ID", width: 70 },
       {
-        field: "iinvestor_name",
+        field: "investor_name",
         headerName: "Investor Name",
         flex: 1,
         minWidth: 200,

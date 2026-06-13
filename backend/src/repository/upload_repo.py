@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.investors_model import Investor
+from backend.src.dtos.investors_dto import Investor
 
 
 class UploadRepository:

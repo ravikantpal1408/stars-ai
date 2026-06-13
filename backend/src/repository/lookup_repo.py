@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.lookups_model import Lookups
+from backend.src.dtos.lookups_dto import Lookups
 
 
 class LookupRepository:

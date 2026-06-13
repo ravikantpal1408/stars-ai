@@ -1,6 +1,6 @@
 export interface Investor {
   id: number;
-  iinvestor_name: string;
+  investor_name: string;
   is_parent: boolean;
   bqr_date: string;
   country_of_risk_code: string;

@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.deals_model import Deals
+from backend.src.dtos.deals_dto import Deals
 
 
 class DealRepository:
