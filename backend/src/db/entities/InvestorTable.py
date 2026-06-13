@@ -2,10 +2,8 @@ from datetime import datetime
 from time import timezone
 from typing import Optional
 from sqlalchemy import String, Numeric, Boolean, Integer, DateTime
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-class Base(DeclarativeBase):
-    pass
+from sqlalchemy.orm import Mapped, mapped_column
+from backend.src.db.entities.BaseModel import Base
 
 class InvestorTable(Base):
     __tablename__ = "stars_investor_tbl"

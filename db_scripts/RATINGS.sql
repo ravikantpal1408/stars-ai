@@ -1,19 +1,17 @@
 CREATE TABLE stars_ratings (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    bqr INTEGER CHECK (bqr >= 0), -- Added check constraint
+    bqr INTEGER CHECK (bqr >= 0), 
     default_internal VARCHAR(100),
     lgd VARCHAR(100),
-    lgd_percent DECIMAL(8, 4) CHECK (lgd_percent <= 100), -- Fixed typo and added cap
-    internal_code VARCHAR(100) NOT NULL, -- Added NOT NULL if this is a business key
+    lgd_percent DECIMAL(8, 4) CHECK (lgd_percent <= 100), 
+    internal_code VARCHAR(100) NOT NULL, 
     
     is_active BOOLEAN DEFAULT TRUE,    
     created_by VARCHAR(100) DEFAULT CURRENT_USER,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
+    --  FIXED: Removed trailing comma here
+    created_at TIMESTAMPTZ DEFAULT NOW()
     
-    -- Optional: Add a unique constraint if internal_code should not repeat
-    CONSTRAINT unique_internal_code UNIQUE (internal_code)
 );
-
 /
 
 

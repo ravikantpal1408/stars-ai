@@ -12,6 +12,8 @@ class Deals(BaseModel):
     # Core Deal Info
     deal_id: int
     deal_name: str
+    investor_id: int
+    region_id: int
     approved_amount: Optional[Decimal] = None
 
     # Joined Data from Lookup Tables
@@ -21,7 +23,7 @@ class Deals(BaseModel):
 
     # Metadata
     is_active: bool
-    created_at: datetime
+    created_on: datetime
     created_by: str
 
     # Enables compatibility with SQLAlchemy row objects

@@ -1,47 +1,74 @@
 import asyncio
-import uuid
-
-from sqlalchemy import text
+from sqlalchemy import literal, literal_column, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.dtos.deals_dto import Deals
+from backend.src.db.entities.DealTable import DealTable # Import the ORM entity we created earlier
+from backend.src.db.entities.InvestorTable import InvestorTable # Import the Investor ORM entity
 
 
 class DealRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def fetch_all(self):
-        # 1. Identifier Safety: Use a clean UUID
-        raw_id = uuid.uuid4().hex[:8]
-        cursor_id = f"deals_{raw_id}"
-
-        # 2. Transaction Handling: Check if we are already in a transaction
-        # This prevents the "Transaction already started" error.
-        if not self.db.in_transaction():
-            await self.db.begin()
-
-        try:
-            # 3. Call the procedure
-            await self.db.execute(
-                text("CALL fetch_deals_procedure(:cursor_name)"),
-                {"cursor_name": cursor_id},
+    async def fetch_all(self) -> list[Deals]:
+        query = (
+            select(
+                DealTable.id,
+                DealTable.deal_id,
+                DealTable.deal_name,
+                DealTable.investor_id,
+                InvestorTable.investor_name,
+                DealTable.region_id,
+                DealTable.approved_amount,
+                DealTable.is_active,
+                DealTable.created_on,
+                DealTable.created_by,
+                
+                # Mock missing lookups as native SQL NULLs
+                literal(None).label("region_name"),
+                literal(None).label("funding_vehicle_name"),
+                literal(None).label("currency_code")
             )
+            .join(InvestorTable, InvestorTable.id == DealTable.investor_id)
+            .where(DealTable.is_active == True)
+            .order_by(DealTable.id.desc())
+        )
 
-            # 4. Fetch the data
-            # We wrap the cursor name in double quotes to handle it as a SQL identifier
-            result = await self.db.execute(text(f'FETCH ALL IN "{cursor_id}"'))
-            rows = result.mappings().all()
+        # 1. Stream row execution from PostgreSQL
+        result = await self.db.stream(query)
+        
+        # 2. Extract raw tuple rows directly (avoids mapping/flattening bugs)
+        raw_rows = (await result.all())
 
-            # 5. Non-Blocking Validation:
-            # If 'rows' is large, this prevents the API from freezing for other users
-            return await asyncio.to_thread(self._validate_rows, rows)
-
-        finally:
-            # 6. Resource Cleanup: Always close the cursor
-            await self.db.execute(text(f'CLOSE "{cursor_id}"'))
-            # Note: We don't commit here; let the caller or middleware handle the commit/rollback
-
-    def _validate_rows(self, rows):
-        """Sync helper for CPU-bound validation"""
-        return [Deals.model_validate(row) for row in rows]
+        # 3. Offload the dictionary building and Pydantic parsing off-thread
+        return await asyncio.to_thread(self._validate_rows, raw_rows)
+    
+    
+    def _validate_rows(self, raw_rows) -> list[Deals]:
+            """Manually constructs explicit dictionaries to eliminate Pydantic validation errors"""
+            validated_deals = []
+            
+            for row in raw_rows:
+                # Explicitly unpack the row properties in order of the select statement
+                deal_dict = {
+                    "id": row[0],
+                    "deal_id": row[1],
+                    "deal_name": row[2],
+                    "investor_id": row[3],
+                    "investor_name": row[4],
+                    "region_id": row[5],
+                    "approved_amount": row[6],
+                    "is_active": row[7],
+                    "created_on": row[8],
+                    "created_by": row[9],
+                    
+                    # Defaulting missing keys as clean python None objects
+                    "region_name": row[10],
+                    "funding_vehicle_name": row[11],
+                    "currency_code": row[12]
+                }
+                
+                validated_deals.append(Deals.model_validate(deal_dict))
+                
+            return validated_deals

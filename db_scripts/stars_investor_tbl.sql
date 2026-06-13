@@ -61,3 +61,5 @@ BEGIN
         i := i + 1;
     END LOOP;
 END $$;
+
+ALTER TABLE stars_investor_tbl ADD COLUMN is_parent BOOLEAN DEFAULT FALSE;
